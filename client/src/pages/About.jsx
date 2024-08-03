@@ -12,7 +12,7 @@ function About({ setProgress }) {
   const handleDownload = () => {
     setProgress(30);
     const link = document.createElement("a");
-    link.href = "/public/resumefile/PARISHLESH updated (4).pdf";
+    link.href = "/resumefile/PARISHLESH updated (4).pdf";
     link.download = "Parishlesh resume.pdf"; // This will be the name of the file when downloaded
     link.click();
     setProgress(100);
