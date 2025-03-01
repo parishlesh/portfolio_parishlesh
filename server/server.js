@@ -11,7 +11,7 @@ const errorMiddleware = require("./middlewares/error-middleware");
 const cors = require('cors')
 
 var corsOptions = {
-    origin: ['http://localhost:5173', 'https://portfolio-parishlesh-main-aqcm920eb-parishleshs-projects.vercel.app'],
+    origin: ['http://localhost:5173', 'https://portfolio-parishlesh-gv5b.vercel.app'],
     method: "GET, PUT, POST, DELETE, PATCH, HEAD",
     Credential: true
 }
