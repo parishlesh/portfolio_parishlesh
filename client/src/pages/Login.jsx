@@ -3,14 +3,14 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../storage/auth';
 import { toast } from 'react-toastify';
 
-function Login({setProgress}) {
+function Login({ setProgress }) {
 
   useEffect(() => {
     setProgress(30)
     setTimeout(() => {
-     setProgress(100)
+      setProgress(100)
     }, 500);
-   }, [])
+  }, [])
 
   const [user, setUser] = useState({
     email: "",
@@ -31,7 +31,7 @@ function Login({setProgress}) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-setProgress(30)
+    setProgress(30)
     try {
       const response = await fetch(`${API}/api/auth/login`, {
         method: "POST",
@@ -58,7 +58,7 @@ setProgress(30)
       } else {
         toast.error(data.extraDetails ? data.extraDetails : data.message);
         setProgress(100)
-        
+
       }
     } catch (error) {
       toast.error("An error occurred during login");
@@ -73,7 +73,7 @@ setProgress(30)
     <section className="flex items-center justify-center min-h-screen">
       <main className="bg-white rounded-lg shadow-lg w-4/5 lg:w-1/2 mx-auto flex overflow-hidden">
         <div className="w-1/2 hidden md:flex items-center justify-center p-5">
-          <img src="public/images/Login-amico.png" alt="login photo" className="max-w-full h-auto" />
+          <img src="/images/Login-amico.png" alt="login photo" className="max-w-full h-auto" />
         </div>
         <div className="w-full md:w-1/2 p-6 md:p-10 2xl:flex flex-col justify-center">
           <h1 className="text-2xl font-bold mb-4 text-gray-700">Login</h1>
