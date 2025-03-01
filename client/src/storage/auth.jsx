@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const API = import.meta.env.VITE_API;
+const API = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 
 export const AuthProvider = ({ children }) => {
@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [service, setService] = useState([]);
   const authorizationToken = `Bearer ${token}`;
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const storeTokenInLS = (serverToken, rememberMe) => {
     if (rememberMe) {
       localStorage.setItem("token", serverToken);
@@ -20,21 +20,21 @@ export const AuthProvider = ({ children }) => {
     }
     setToken(serverToken);
   };
-  
+
   const isLoggedIn = !!token;
-  
+
   const logoutUser = () => {
     setToken("");
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
   };
-  
+
   const userAuthentication = async () => {
     if (!token) {
       console.error("No token available for authentication");
       return;
     }
-    
+
     try {
       setIsLoading(true);
       const response = await fetch(`${API}/api/auth/user`, {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Error fetching user data", error);
     }
   };
-  
+
   const getServices = async () => {
     try {
       const response = await fetch(`${API}/api/data/service`, {
@@ -74,32 +74,32 @@ export const AuthProvider = ({ children }) => {
       console.log(`Services frontend error: ${error}`);
     }
   };
-  
+
   useEffect(() => {
     if (token) {
       userAuthentication();
     }
     // eslint-disable-next-line
   }, [token]);
-  
+
   useEffect(() => {
     getServices();
     // eslint-disable-next-line
   }, [token]);
-  
+
   return (
     <AuthContext.Provider
-    value={{
-      isLoggedIn,
-      storeTokenInLS,
-      logoutUser,
-      user,
-      service,
-      authorizationToken,
-      token,
-      isLoading,
-      API,
-    }}
+      value={{
+        isLoggedIn,
+        storeTokenInLS,
+        logoutUser,
+        user,
+        service,
+        authorizationToken,
+        token,
+        isLoading,
+        API,
+      }}
     >
       {children}
     </AuthContext.Provider>
