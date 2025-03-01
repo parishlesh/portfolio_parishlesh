@@ -4,14 +4,14 @@ import { useAuth } from "../storage/auth";
 import { toast } from "react-toastify";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 
-function Register({setProgress}) {
+function Register({ setProgress }) {
 
   useEffect(() => {
     setProgress(30)
     setTimeout(() => {
-     setProgress(100)
+      setProgress(100)
     }, 500);
-   }, [])
+  }, [])
 
   const [user, setUser] = useState({
     username: "",
@@ -144,7 +144,7 @@ function Register({setProgress}) {
         </div>
         <div className="w-full md:w-1/2 flex items-center justify-center">
           <img
-            src="public/images/Sign up-amico.png"
+            src="/images/Sign up-amico.png"
             alt="registration photo"
             className="max-w-full h-auto"
           />
