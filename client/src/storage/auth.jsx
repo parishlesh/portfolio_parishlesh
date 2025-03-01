@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const API = import.meta.env.VITE_REACT_APP_BASE_URL;
+const API = "https://portfolio-parishlesh.onrender.com";
 
 
 export const AuthProvider = ({ children }) => {
