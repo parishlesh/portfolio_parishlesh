@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaGithub, FaLinkedin, FaInstagramSquare, FaFacebook } from "react-icons/fa";
 import { SlPaperPlane } from "react-icons/sl";
 import { FaXTwitter } from "react-icons/fa6";
+import { Typewriter } from 'react-simple-typewriter'
 
 import { Link, NavLink } from 'react-router-dom';
 
@@ -25,7 +26,17 @@ function Home({ setProgress }) {
         <div className="grid grid-rows-2 h-fit lg:order-1">
           <div className='text-center mb-10 lg:text-left  '>
             <h1 className="font-roboto font-semibold text-[45px] p-2 m-1 pb-0">I'm Parishlesh</h1>
-            <h2 className="font-roboto font-light text-[28px] p-2 pt-0 m-1">Frontend Developer</h2>
+            <h2 className="font-roboto font-light text-[28px] p-2 pt-0 m-1">
+            <Typewriter
+                words={["Frontend Developer", "UI/UX Designer", "Video Editor", "Photographer", "Artist"]}
+                loop
+                cursor
+                cursorStyle='_'
+                >
+                  
+                </Typewriter>
+             
+               </h2>
             <p className="font-roboto font-light text-[16px] text-wrap m-1 p-2 pt-0">
               I’m a web developer passionate about turning concepts into reality with React JS. My expertise in HTML and CSS, combined with a creative touch, allows me to build exceptional web solutions. Dive into my portfolio and see what I can do!
             </p>
