@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
@@ -64,18 +64,11 @@ function SectionHead({ title, note }) {
 const NetworkGlobe = lazy(() => import("../components/NetworkGlobe"));
 
 function Hero() {
-  const counter = useRef(null);
-  const n = useRef(0);
-  const onDeliver = useCallback(() => {
-    n.current += 1;
-    if (counter.current) counter.current.textContent = n.current.toLocaleString("en-IN");
-  }, []);
-
   return (
     <section id="top" className="relative h-[100svh] min-h-[640px] overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_45%,rgba(88,115,255,.18),transparent_60%)]" aria-hidden="true" />
       <Suspense fallback={null}>
-        <NetworkGlobe onDeliver={onDeliver} />
+        <NetworkGlobe />
       </Suspense>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night via-night/70 to-transparent" aria-hidden="true" />
 
@@ -91,14 +84,14 @@ function Hero() {
           delay={300}
           className="block font-display font-extrabold tracking-tight leading-[0.9] text-[clamp(3rem,11vw,8.5rem)] break-words"
         />
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="mt-8">
           <div>
             <p className="max-w-xl text-lg md:text-xl leading-relaxed text-fog/80">{profile.intro}</p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#work" className="rounded-full bg-fog px-6 py-3 font-medium text-night hover:bg-packet hover:text-white transition-colors">
+              <a href="#experience" className="rounded-full bg-fog px-6 py-3 font-medium text-night hover:bg-packet hover:text-white transition-colors">
                 See my work
               </a>
-              <a href={profile.resume} download="Parishlesh-resume.pdf" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 font-medium hover:border-white transition-colors">
+              <a href={profile.resume} download="Parishlesh_Resume.pdf" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 font-medium hover:border-white transition-colors">
                 <FiDownload aria-hidden="true" /> Download résumé
               </a>
               <ul className="ml-2 flex gap-4">
@@ -114,11 +107,6 @@ function Hero() {
                 })}
               </ul>
             </div>
-          </div>
-          <div className="hidden lg:block text-right text-sm text-dim" aria-hidden="true">
-            <p className="!pointer-events-none">Messages delivered since you arrived</p>
-            <span ref={counter} className="block font-mono text-3xl text-fog tabular-nums">0</span>
-            <p className="!pointer-events-none mt-3 text-packet/90">Click the globe to send a burst</p>
           </div>
         </div>
       </div>
@@ -163,7 +151,7 @@ function Work() {
 
   return (
     <section id="work" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-      <SectionHead title="Selected work" note="Point at a skill to see where I've used it. Click to keep it selected." />
+      <SectionHead title="Side projects" note="Point at a skill to see where I've used it. Click to keep it selected." />
       <div className="grid gap-12 lg:grid-cols-[15rem_1fr]">
         {/* skills */}
         <aside className="lg:sticky lg:top-28 self-start" onMouseLeave={() => hover(null)}>
@@ -195,7 +183,7 @@ function Work() {
           ))}
           <p className="min-h-[3rem] text-sm text-dim" aria-live="polite">
             {active && atWork && `${active}: used in production at ${experience[0].company.split(" ")[0]}.`}
-            {active && !atWork && !anyProject && `${active}: part of my everyday toolkit.`}
+            {active && !atWork && !anyProject && `${active}: part of my toolkit.`}
           </p>
           {pinned && (
             <button type="button" onClick={() => { setPinned(false); setActive(null); }} className="text-sm text-packet underline underline-offset-4">
@@ -273,31 +261,65 @@ function Work() {
   );
 }
 
-/* ---------- Experience timeline ---------- */
+/* ---------- Experience ---------- */
+function WorkCard({ w }) {
+  return (
+    <article onMouseMove={spot} className="spot rounded-3xl border border-line bg-night/60 p-6 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h4 className="font-display font-semibold text-xl md:text-2xl tracking-tight">{w.name}</h4>
+          <p className="mt-1 text-dim">{w.what}</p>
+        </div>
+        {w.live && (
+          <a href={w.live} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-fog px-4 py-2 text-sm font-medium text-night hover:bg-packet hover:text-white transition-colors">
+            Live site <FiArrowUpRight aria-hidden="true" />
+          </a>
+        )}
+      </div>
+      <ul className="mt-5 flex flex-wrap gap-2">
+        {w.metrics.map((m) => (
+          <li key={m} className="rounded-full border border-packet/40 bg-packet/10 px-3 py-1 text-sm text-packet">{m}</li>
+        ))}
+      </ul>
+      <ul className="mt-5 space-y-2.5">
+        {w.points.map((pt) => (
+          <li key={pt} className="flex gap-3 leading-relaxed text-fog/75">
+            <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-fog/50" aria-hidden="true" />
+            {pt}
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 function Experience() {
   return (
     <section id="experience" className="bg-deep/60 border-y border-line">
       <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-        <SectionHead title="Experience" />
+        <SectionHead title="Experience" note="What I’ve shipped in production, and what it changed." />
         <ol className="relative border-l-2 border-line ml-2">
           {experience.map((e, i) => (
-            <li key={e.company} className="relative pl-8 md:pl-12 pb-14 last:pb-0">
+            <li key={e.company} className="relative pl-8 md:pl-12 pb-16 last:pb-0">
               <span className={`absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-night ${i === 0 ? "bg-packet live-dot" : "bg-line"}`} aria-hidden="true" />
-              <div className="grid md:grid-cols-[12rem_1fr] gap-2 md:gap-10">
-                <p className="text-dim pt-1">{e.period}</p>
-                <div>
-                  <h3 className="font-display font-semibold text-xl md:text-2xl tracking-tight">{e.title}</h3>
-                  <p className="mt-1 text-fog/65">{e.company}, {e.place}</p>
-                  <ul className="mt-5 space-y-2 max-w-2xl">
-                    {e.points.map((pt) => (
-                      <li key={pt} className="flex gap-3 leading-relaxed text-fog/75">
-                        <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-packet" aria-hidden="true" />
-                        {pt}
-                      </li>
-                    ))}
-                  </ul>
+              <p className="text-dim">{e.period}</p>
+              <h3 className="mt-1 font-display font-semibold text-2xl md:text-3xl tracking-tight">{e.title}</h3>
+              <p className="mt-1 text-fog/65">{e.company}, {e.place}</p>
+              {e.work && (
+                <div className="mt-8 grid gap-5 lg:grid-cols-2">
+                  {e.work.map((w) => <WorkCard key={w.name} w={w} />)}
                 </div>
-              </div>
+              )}
+              {e.points && (
+                <ul className="mt-5 space-y-2 max-w-2xl">
+                  {e.points.map((pt) => (
+                    <li key={pt} className="flex gap-3 leading-relaxed text-fog/75">
+                      <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-packet" aria-hidden="true" />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ol>
@@ -321,7 +343,8 @@ function About() {
         </p>
         <p>
           I work across the whole stack, so I can take a feature from schema to screen without
-          waiting on hand-offs.
+          waiting on hand-offs. I use AI tools like GitHub Copilot, Claude and Lovable to move
+          faster without cutting corners on quality.
         </p>
         <p>
           Away from the keyboard I travel, sketch, listen to a lot of music and spend time with my pets.
@@ -414,8 +437,8 @@ export default function Home({ setProgress, section }) {
   return (
     <main>
       <Hero />
-      <Work />
       <Experience />
+      <Work />
       <About />
       <Contact />
     </main>

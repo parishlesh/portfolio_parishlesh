@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiBriefcase, FiClock, FiUser, FiSend } from "react-icons/fi";
+import { FiBriefcase, FiCode, FiUser, FiSend } from "react-icons/fi";
 
 const LINKS = [
-  { id: "work", label: "Work", Icon: FiBriefcase },
-  { id: "experience", label: "Experience", Icon: FiClock },
+  { id: "experience", label: "Experience", Icon: FiBriefcase },
+  { id: "work", label: "Projects", Icon: FiCode },
   { id: "about", label: "About", Icon: FiUser },
   { id: "contact", label: "Contact", Icon: FiSend },
 ];

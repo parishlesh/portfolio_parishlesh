@@ -3,8 +3,8 @@ import CipherText from "./CipherText";
 
 // A tiny looping conversation. Each message lands as ciphertext and decrypts.
 const SCRIPT = [
-  { from: "them", text: "hey, what do you build?" },
-  { from: "me", text: "real-time apps: chat, calls, live dashboards" },
+  { from: "them", text: "hey, what have you shipped?" },
+  { from: "me", text: "an LMS for 2,000+ employees and AI-proctored exams" },
   { from: "them", text: "what's the stack?" },
   { from: "me", text: "React, Next.js, Node, MongoDB, Socket.IO, WebRTC" },
   { from: "them", text: "and the chat is actually encrypted?" },

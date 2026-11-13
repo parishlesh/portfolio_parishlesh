@@ -2,13 +2,13 @@
 
 export const profile = {
   name: "Parishlesh",
-  role: "Full stack developer",
+  role: "Full-stack software developer",
   location: "Gurugram, India",
   email: "parishleshfulvanshi@gmail.com",
   phone: "+91 86839 66014",
-  resume: "/resumefile/PARISHLESH updated (4).pdf",
+  resume: "/resumefile/Parishlesh_Resume.pdf",
   intro:
-    "I build real-time web apps end to end — React and Next.js on the front, Node, Express and MongoDB behind it, with Socket.IO and WebRTC when things need to move live.",
+    "Two years shipping enterprise web apps in React, Next.js and Node.js: training platforms for 2,000+ employees, AI-proctored exams over WebRTC, and tender workflows from bid to contract.",
   socials: [
     { label: "GitHub", href: "https://github.com/parishlesh" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/parishlesh-fulvanshi-a74048232/" },
@@ -20,14 +20,52 @@ export const profile = {
 export const experience = [
   {
     company: "Rosmerta Technology Limited",
-    title: "Full Stack Developer",
-    period: "2024 — Present",
+    title: "Software Development Engineer I",
+    period: "Aug 2024 — Present",
     place: "Gurugram",
-    stack: ["React", "Next.js", "TypeScript", "JavaScript", "Redux", "Tailwind CSS", "Node.js", "Express", "MongoDB", "JWT", "Socket.IO", "WebRTC", "Git"],
-    points: [
-      "Ship production features across React / Next.js frontends and Node.js + Express APIs.",
-      "Build real-time flows with Socket.IO and WebRTC.",
-      "Manage app state with Redux and keep the codebase typed with TypeScript.",
+    // skills used at this job (drives the "used in production" note in the skills filter)
+    stack: ["React", "Next.js", "TypeScript", "JavaScript", "Redux", "Tailwind CSS", "Node.js", "Express", "MongoDB", "JWT", "REST APIs", "Socket.IO", "WebRTC", "Cron jobs", "Git", "Postman", "Lovable"],
+    work: [
+      {
+        name: "ADTC-Shikshan",
+        what: "Training & evaluation management system",
+        metrics: ["70% less manual scheduling", "60%+ fewer malpractice incidents", "30% faster dashboards"],
+        points: [
+          "Architected end to end: module-completion tracking, eligibility checks and session booking across multiple ADTC centres.",
+          "Cron-based slot engine that auto-assigns trainers and centres by availability rules; slot utilisation up 40%.",
+          "AI-proctored exams over WebRTC: multi-face and forbidden-object detection, fullscreen enforcement, tab-switch monitoring.",
+          "25+ REST APIs with role-based JWT auth; Redux state and API caching tuned for faster dashboards.",
+        ],
+      },
+      {
+        name: "Internal LMS",
+        what: "E-learning platform for 2,000+ employees",
+        metrics: ["2,000+ employees", "100% induction compliance", "45% higher completion"],
+        points: [
+          "Induction, mandatory compliance training and module-based certification.",
+          "Admin, trainer and employee dashboards in React and Redux over 20+ REST APIs.",
+          "Node.js and MongoDB services for content delivery and progress tracking; report generation 35% faster.",
+        ],
+      },
+      {
+        name: "TMS",
+        what: "Enterprise tender management system",
+        metrics: ["Tender to contract", "Role-based approvals"],
+        points: [
+          "React modules covering the full tender lifecycle: assignment, synopsis, bid preparation, evaluation and contract signing.",
+          "Decision Gate and Action Queue approval screens, with tabs that lock and unlock by tender status.",
+          "Bid preparation with document versioning, S3-linked storage, drag-and-drop ordering and PDF consolidation.",
+        ],
+      },
+      {
+        name: "Rosmerta website",
+        what: "Corporate site, built with React and Lovable",
+        metrics: ["AI-assisted build"],
+        live: "https://rosmertagroupwebview.lovable.app",
+        points: [
+          "Responsive company, product and service pages, refined iteratively with AI-assisted development.",
+        ],
+      },
     ],
   },
   {
@@ -36,7 +74,7 @@ export const experience = [
     period: "2020 — 2024",
     place: "Hisar",
     points: [
-      "Coders Club contributor; media team coordinator for the Training & Placement Cell.",
+      "Coders Club contributor, media team coordinator for the Training & Placement Cell, and fortnightly GD champion.",
     ],
   },
 ];
@@ -71,10 +109,10 @@ export const projects = [
   },
   {
     name: "RoomRover",
-    tagline: "Apartment hunting with a map",
+    tagline: "Full-stack apartment hunting with a map",
     description:
-      "Filter listings by location, price and amenities, see them on an interactive map, save searches and message landlords in-app.",
-    stack: ["React", "JavaScript", "Tailwind CSS"],
+      "Real-time listings you can filter by location, price and amenities, shown on Google Maps, with saved searches and in-app messaging.",
+    stack: ["React", "Node.js", "MongoDB", "Google Maps API"],
     live: "",
     repo: "https://github.com/parishlesh",
   },
@@ -109,7 +147,7 @@ export const projects = [
 
 export const skills = [
   { group: "Frontend", items: ["React", "Next.js", "TypeScript", "JavaScript", "Redux", "Tailwind CSS"] },
-  { group: "Backend", items: ["Node.js", "Express", "MongoDB", "JWT"] },
-  { group: "Real-time", items: ["Socket.IO", "WebRTC"] },
-  { group: "Tooling", items: ["Git", "Figma", "Python", "ffmpeg"] },
+  { group: "Backend", items: ["Node.js", "Express", "MongoDB", "PostgreSQL", "REST APIs", "JWT"] },
+  { group: "Real-time", items: ["Socket.IO", "WebRTC", "Cron jobs"] },
+  { group: "Tooling", items: ["Git", "Postman", "Figma", "Lovable", "Google Maps API", "Python", "ffmpeg"] },
 ];
