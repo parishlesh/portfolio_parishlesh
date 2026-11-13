@@ -16,10 +16,45 @@ const spot = (e) => {
   e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
 };
 
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tilt = (e) => {
+  spot(e);
+  if (reduceMotion()) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - 0.5;
+  const y = (e.clientY - r.top) / r.height - 0.5;
+  e.currentTarget.style.setProperty("--ry", `${x * 6}deg`);
+  e.currentTarget.style.setProperty("--rx", `${-y * 6}deg`);
+};
+const untilt = (e) => {
+  e.currentTarget.style.setProperty("--ry", "0deg");
+  e.currentTarget.style.setProperty("--rx", "0deg");
+};
+
+function useInView(ref) {
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && (setSeen(true), io.disconnect()), { rootMargin: "0px 0px -15% 0px" });
+    ref.current && io.observe(ref.current);
+    return () => io.disconnect();
+  }, [ref]);
+  return seen;
+}
+
+function DecryptHeading({ text, className }) {
+  const ref = useRef(null);
+  const seen = useInView(ref);
+  return (
+    <h2 ref={ref} className={className}>
+      <CipherText text={text} duration={900} start={seen} />
+    </h2>
+  );
+}
+
 function SectionHead({ title, note }) {
   return (
     <div className="mb-10 md:mb-14 max-w-2xl">
-      <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tight">{title}</h2>
+      <DecryptHeading text={title} className="font-display font-semibold text-3xl md:text-5xl tracking-tight" />
       {note && <p className="mt-4 text-dim text-lg leading-relaxed">{note}</p>}
     </div>
   );
@@ -44,7 +79,7 @@ function Hero() {
       </Suspense>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night via-night/70 to-transparent" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-6 pb-20 md:pb-16">
+      <div className="pointer-events-none relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-6 pb-20 md:pb-16 [&_a]:pointer-events-auto [&_p]:pointer-events-auto [&_h1]:pointer-events-auto">
         <p className="flex items-center gap-2 text-dim mb-5">
           <span className="live-dot h-2 w-2 rounded-full bg-packet" />
           {profile.role} in {profile.location}
@@ -80,10 +115,11 @@ function Hero() {
               </ul>
             </div>
           </div>
-          <p className="hidden lg:block text-right text-sm text-dim" aria-hidden="true">
-            Messages delivered since you arrived
+          <div className="hidden lg:block text-right text-sm text-dim" aria-hidden="true">
+            <p className="!pointer-events-none">Messages delivered since you arrived</p>
             <span ref={counter} className="block font-mono text-3xl text-fog tabular-nums">0</span>
-          </p>
+            <p className="!pointer-events-none mt-3 text-packet/90">Click the globe to send a burst</p>
+          </div>
         </div>
       </div>
     </section>
@@ -91,6 +127,24 @@ function Hero() {
 }
 
 /* ---------- Work: skills filter + projects ---------- */
+function ProjectLinks({ p, big }) {
+  const base = `inline-flex items-center gap-1.5 rounded-full font-medium transition-colors ${big ? "px-5 py-2.5" : "px-4 py-2 text-sm"}`;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {p.live && (
+        <a href={p.live} target="_blank" rel="noreferrer" className={`${base} bg-fog text-night hover:bg-packet hover:text-white`}>
+          Live site <FiArrowUpRight aria-hidden="true" />
+        </a>
+      )}
+      {p.repo && (
+        <a href={p.repo} target="_blank" rel="noreferrer" className={`${base} border border-white/20 hover:border-white`}>
+          <FaGithub aria-hidden="true" /> Code
+        </a>
+      )}
+    </div>
+  );
+}
+
 function Work() {
   const [active, setActive] = useState(null); // hovered/pinned skill
   const [pinned, setPinned] = useState(false);
@@ -154,8 +208,10 @@ function Work() {
         <div>
           {featured && (
             <article
-              onMouseMove={spot}
-              className={`spot relative rounded-[28px] border border-line bg-gradient-to-br from-deep to-night p-7 md:p-10 overflow-hidden shadow-lift transition-opacity duration-300 ${matches(featured) ? "opacity-100" : "opacity-25"}`}
+              onMouseMove={tilt}
+              onMouseLeave={untilt}
+              style={{ transform: "perspective(1400px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))" }}
+              className={`spot relative transition-transform duration-200 ease-out will-change-transform rounded-[28px] border border-line bg-gradient-to-br from-deep to-night p-7 md:p-10 overflow-hidden shadow-lift transition-opacity duration-300 ${matches(featured) ? "opacity-100" : "opacity-25"}`}
             >
               <div className="absolute -right-32 -top-32 h-80 w-80 rounded-full bg-signal/30 blur-3xl" aria-hidden="true" />
               <div className="relative grid gap-10 xl:grid-cols-[1fr_20rem] items-start">
@@ -181,9 +237,7 @@ function Work() {
                     <li key={s} className={`rounded-full px-3 py-1 text-sm ${active === s ? "bg-packet text-white" : "bg-white/10"}`}>{s}</li>
                   ))}
                 </ul>
-                <a href={featured.repo} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-medium hover:text-packet transition-colors">
-                  View code <FiArrowUpRight aria-hidden="true" />
-                </a>
+                <ProjectLinks p={featured} big />
               </div>
             </article>
           )}
@@ -191,15 +245,15 @@ function Work() {
           <ul className="mt-6 border-t border-line">
             {rest.map((p) => (
               <li key={p.name} onMouseMove={spot} className={`spot group rounded-2xl border-b border-line transition-[opacity,background-color] duration-300 hover:bg-deep ${matches(p) ? "opacity-100" : "opacity-25"}`}>
-                <a href={p.repo} target="_blank" rel="noreferrer" className="block px-4 md:px-6 py-7 md:py-8 focus-visible:outline-offset-0">
-                  <div className="flex items-baseline justify-between gap-6">
+                <div className="px-4 md:px-6 py-7 md:py-8">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight group-hover:text-packet transition-colors">{p.name}</h3>
                       <p className="mt-1 text-dim">{p.tagline}</p>
                     </div>
-                    <FiArrowUpRight className="shrink-0 text-2xl text-dim transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-packet" aria-hidden="true" />
+                    <ProjectLinks p={p} />
                   </div>
-                  <div className="grid grid-rows-[1fr] md:grid-rows-[0fr] md:group-hover:grid-rows-[1fr] md:group-focus-visible:grid-rows-[1fr] transition-[grid-template-rows] duration-300">
+                  <div className="grid grid-rows-[1fr] md:grid-rows-[0fr] md:group-hover:grid-rows-[1fr] md:group-focus-within:grid-rows-[1fr] transition-[grid-template-rows] duration-300">
                     <div className="overflow-hidden">
                       <p className="pt-4 max-w-2xl leading-relaxed text-fog/75">{p.description}</p>
                     </div>
@@ -209,7 +263,7 @@ function Work() {
                       <li key={s} className={`rounded-full border px-2.5 py-0.5 text-xs ${active === s ? "bg-packet text-white border-packet" : "border-line text-dim"}`}>{s}</li>
                     ))}
                   </ul>
-                </a>
+                </div>
               </li>
             ))}
           </ul>
@@ -312,7 +366,7 @@ function Contact() {
     <section id="contact" className="relative overflow-hidden border-t border-line bg-[radial-gradient(ellipse_at_20%_0%,rgba(88,115,255,.22),transparent_55%)]">
       <div className="mx-auto max-w-6xl px-6 py-24 md:py-32 grid gap-14 lg:grid-cols-2">
         <div>
-          <h2 className="font-display font-semibold text-4xl md:text-6xl tracking-tight leading-[1.05]">Let’s build something live.</h2>
+          <DecryptHeading text="Let’s build something live." className="font-display font-semibold text-4xl md:text-6xl tracking-tight leading-[1.05]" />
           <p className="mt-6 text-lg text-white/70 max-w-md">Have a role, a project or a question? Send a message and I’ll get back to you.</p>
           <ul className="mt-10 space-y-4 text-white/85">
             <li><a href={`mailto:${profile.email}`} className="inline-flex items-center gap-3 hover:text-packet transition-colors"><FiMail aria-hidden="true" /> {profile.email}</a></li>

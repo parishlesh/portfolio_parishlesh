@@ -76,24 +76,72 @@ export default function NetworkGlobe({ onDeliver }) {
     const edgeMat = new THREE.LineBasicMaterial({ color: 0x4c6bff, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false });
     world.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
-    // ---- packets ----
+    // ---- packets: P always running, B reserved for click bursts ----
     const P = small ? 22 : 40;
+    const B = 36;
+    const FAR = 999;
     const colors = [new THREE.Color(0xff6a4d), new THREE.Color(0x6f8bff), new THREE.Color(0xffffff)];
-    const packets = Array.from({ length: P }, () => {
+    const randNbr = (i) => { const n = [...adj[i]]; return n[Math.floor(Math.random() * n.length)]; };
+    const packets = Array.from({ length: P + B }, (_, i) => {
+      const burst = i >= P;
       const from = Math.floor(Math.random() * N);
-      const nbrs = [...adj[from]];
-      return { from, to: nbrs[Math.floor(Math.random() * nbrs.length)], t: Math.random(), speed: 0.6 + Math.random() * 0.9 };
+      return { burst, active: !burst, hops: 0, from, to: randNbr(from), t: Math.random(), speed: 0.6 + Math.random() * 0.9 };
     });
-    const pPos = new Float32Array(P * 3);
-    const pCol = new Float32Array(P * 3);
-    packets.forEach((_, i) => colors[i % 3].toArray(pCol, i * 3));
+    const pPos = new Float32Array((P + B) * 3).fill(FAR);
+    const pCol = new Float32Array((P + B) * 3);
+    packets.forEach((p, i) => (p.burst ? colors[0] : colors[i % 3]).toArray(pCol, i * 3));
     const pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
     pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
     const pMat = new THREE.PointsMaterial({
       size: 0.2, map: dot, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     });
-    world.add(new THREE.Points(pGeo, pMat));
+    const pPoints = new THREE.Points(pGeo, pMat);
+    pPoints.frustumCulled = false;
+    world.add(pPoints);
+
+    // shockwave sprite shown where a burst starts
+    const waveMat = new THREE.SpriteMaterial({ map: dot, color: 0xff6a4d, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+    const wave = new THREE.Sprite(waveMat);
+    world.add(wave);
+    let waveT = 1;
+
+    // invisible sphere used to find where a click lands
+    const hitSphere = new THREE.Mesh(new THREE.SphereGeometry(R, 24, 24), new THREE.MeshBasicMaterial({ visible: false }));
+    world.add(hitSphere);
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+
+    const burstFrom = (origin) => {
+      const nbrs = [...adj[origin]];
+      packets.filter((p) => p.burst).forEach((p, k) => {
+        p.active = true;
+        p.hops = 3 + Math.floor(Math.random() * 3);
+        p.from = origin;
+        p.to = nbrs[k % nbrs.length];
+        p.t = -Math.floor(k / nbrs.length) * 0.35; // stagger waves
+        p.speed = 1.8 + Math.random() * 0.8;
+      });
+      wave.position.copy(nodes[origin]);
+      waveT = 0;
+    };
+
+    const onClick = (e) => {
+      const r = el.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObject(hitSphere)[0];
+      let origin;
+      if (hit) {
+        const local = world.worldToLocal(hit.point.clone());
+        let best = Infinity;
+        nodes.forEach((n, i) => { const d = n.distanceToSquared(local); if (d < best) { best = d; origin = i; } });
+      } else {
+        origin = Math.floor(Math.random() * N);
+      }
+      burstFrom(origin);
+    };
+    el.addEventListener("pointerdown", onClick);
 
     // faint outer halo ring
     const ring = new THREE.Mesh(
@@ -150,23 +198,30 @@ export default function NetworkGlobe({ onDeliver }) {
       renderer.domElement.style.opacity = String(1 - scroll * 0.85);
 
       packets.forEach((p, i) => {
+        if (!p.active) { pPos[i * 3] = FAR; return; }
         p.t += dt * p.speed;
         if (p.t >= 1) {
           p.t = 0;
           p.from = p.to;
-          const nbrs = [...adj[p.from]];
-          p.to = nbrs[Math.floor(Math.random() * nbrs.length)];
+          p.to = randNbr(p.from);
           deliverRef.current?.();
+          if (p.burst && --p.hops <= 0) { p.active = false; pPos[i * 3] = FAR; return; }
         }
+        if (p.t < 0) { pPos[i * 3] = FAR; return; }
         tmp.lerpVectors(nodes[p.from], nodes[p.to], p.t).toArray(pPos, i * 3);
       });
+      if (waveT < 1) {
+        waveT = Math.min(1, waveT + dt * 1.6);
+        wave.scale.setScalar(0.2 + waveT * 1.6);
+        waveMat.opacity = 1 - waveT;
+      }
       pGeo.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
     };
 
     if (reduced) {
-      packets.forEach((p, i) => tmp.lerpVectors(nodes[p.from], nodes[p.to], p.t).toArray(pPos, i * 3));
+      packets.forEach((p, i) => p.active && tmp.lerpVectors(nodes[p.from], nodes[p.to], p.t).toArray(pPos, i * 3));
       pGeo.attributes.position.needsUpdate = true;
       world.rotation.set(0.3, 0.6, 0);
       camera.position.z = baseZ;
@@ -180,6 +235,8 @@ export default function NetworkGlobe({ onDeliver }) {
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerdown", onClick);
+      hitSphere.geometry.dispose(); hitSphere.material.dispose(); waveMat.dispose();
       [nodeGeo, edgeGeo, pGeo, ring.geometry].forEach((g) => g.dispose());
       [nodeMat, edgeMat, pMat, ring.material].forEach((m) => m.dispose());
       dot.dispose();
@@ -188,5 +245,5 @@ export default function NetworkGlobe({ onDeliver }) {
     };
   }, []);
 
-  return <div ref={mount} className="absolute inset-0 [&>canvas]:block [&>canvas]:h-full [&>canvas]:w-full" aria-hidden="true" />;
+  return <div ref={mount} className="absolute inset-0 cursor-crosshair [&>canvas]:block [&>canvas]:h-full [&>canvas]:w-full" aria-hidden="true" />;
 }

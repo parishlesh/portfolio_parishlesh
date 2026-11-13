@@ -41,6 +41,7 @@ export const experience = [
   },
 ];
 
+// `live`: deployed URL (leave "" to hide the button). `repo`: source code.
 // `stack` keys must match names in `skills` below so hover-highlighting works.
 export const projects = [
   {
@@ -56,6 +57,7 @@ export const projects = [
       "Password reset / change flows",
     ],
     stack: ["React", "Node.js", "Express", "MongoDB", "Socket.IO", "JWT"],
+    live: "",
     repo: "https://github.com/parishlesh",
   },
   {
@@ -64,6 +66,7 @@ export const projects = [
     description:
       "Tracks applications from first contact to offer, with status pipelines and notes per role.",
     stack: ["React", "Node.js", "Express", "MongoDB"],
+    live: "",
     repo: "https://github.com/parishlesh/job-tracker",
   },
   {
@@ -72,6 +75,7 @@ export const projects = [
     description:
       "Filter listings by location, price and amenities, see them on an interactive map, save searches and message landlords in-app.",
     stack: ["React", "JavaScript", "Tailwind CSS"],
+    live: "",
     repo: "https://github.com/parishlesh",
   },
   {
@@ -80,6 +84,7 @@ export const projects = [
     description:
       "A web app that connects people with pets looking for a home.",
     stack: ["React"],
+    live: "",
     repo: "https://github.com/parishlesh",
   },
   {
@@ -88,6 +93,7 @@ export const projects = [
     description:
       "A Python tool that pulls the audio track out of a video with ffmpeg and turns it into text.",
     stack: ["Python", "ffmpeg"],
+    live: "",
     repo: "https://github.com/parishlesh",
   },
   {
@@ -96,6 +102,7 @@ export const projects = [
     description:
       "React and Tailwind front end with a Node, Express and MongoDB API that stores contact messages.",
     stack: ["React", "Tailwind CSS", "Node.js", "Express", "MongoDB"],
+    live: "",
     repo: "https://github.com/parishlesh/portfolio_parishlesh",
   },
 ];
