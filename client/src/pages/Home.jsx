@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
@@ -10,56 +10,80 @@ import { profile, experience, projects, skills } from "../data/portfolio";
 
 const ICONS = { GitHub: FaGithub, LinkedIn: FaLinkedin, X: FaXTwitter, Instagram: FaInstagram };
 
+const spot = (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+  e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+};
+
 function SectionHead({ title, note }) {
   return (
     <div className="mb-10 md:mb-14 max-w-2xl">
       <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tight">{title}</h2>
-      {note && <p className="mt-4 text-muted text-lg leading-relaxed">{note}</p>}
+      {note && <p className="mt-4 text-dim text-lg leading-relaxed">{note}</p>}
     </div>
   );
 }
 
 /* ---------- Hero ---------- */
+const NetworkGlobe = lazy(() => import("../components/NetworkGlobe"));
+
 function Hero() {
+  const counter = useRef(null);
+  const n = useRef(0);
+  const onDeliver = useCallback(() => {
+    n.current += 1;
+    if (counter.current) counter.current.textContent = n.current.toLocaleString("en-IN");
+  }, []);
+
   return (
-    <section id="top" className="relative net-grid">
-      <div className="mx-auto max-w-6xl px-6 pt-32 pb-20 md:pt-40 md:pb-28 grid gap-14 lg:grid-cols-[1.25fr_1fr] items-center">
-        <div>
-          <p className="flex items-center gap-2 text-muted mb-6">
-            <span className="live-dot h-2 w-2 rounded-full bg-signal" />
-            {profile.role} in {profile.location}
-          </p>
-          <CipherText
-            as="h1"
-            text={profile.name}
-            duration={1400}
-            delay={200}
-            className="block font-display font-extrabold tracking-tight leading-[0.95] text-[clamp(2.8rem,9vw,6.5rem)] break-words"
-          />
-          <p className="mt-8 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">{profile.intro}</p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <a href="#work" className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 font-medium text-white hover:bg-ink transition-colors">
-              See my work
-            </a>
-            <a href={profile.resume} download="Parishlesh-resume.pdf" className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-white px-6 py-3 font-medium hover:border-ink transition-colors">
-              <FiDownload aria-hidden="true" /> Download résumé
-            </a>
+    <section id="top" className="relative h-[100svh] min-h-[640px] overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_45%,rgba(88,115,255,.18),transparent_60%)]" aria-hidden="true" />
+      <Suspense fallback={null}>
+        <NetworkGlobe onDeliver={onDeliver} />
+      </Suspense>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night via-night/70 to-transparent" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-6 pb-20 md:pb-16">
+        <p className="flex items-center gap-2 text-dim mb-5">
+          <span className="live-dot h-2 w-2 rounded-full bg-packet" />
+          {profile.role} in {profile.location}
+        </p>
+        <CipherText
+          as="h1"
+          text={profile.name}
+          duration={1600}
+          delay={300}
+          className="block font-display font-extrabold tracking-tight leading-[0.9] text-[clamp(3rem,11vw,8.5rem)] break-words"
+        />
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="max-w-xl text-lg md:text-xl leading-relaxed text-fog/80">{profile.intro}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a href="#work" className="rounded-full bg-fog px-6 py-3 font-medium text-night hover:bg-packet hover:text-white transition-colors">
+                See my work
+              </a>
+              <a href={profile.resume} download="Parishlesh-resume.pdf" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 font-medium hover:border-white transition-colors">
+                <FiDownload aria-hidden="true" /> Download résumé
+              </a>
+              <ul className="ml-2 flex gap-4">
+                {profile.socials.map(({ label, href }) => {
+                  const Icon = ICONS[label];
+                  return (
+                    <li key={label}>
+                      <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="text-xl text-dim hover:text-fog transition-colors">
+                        <Icon />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
-          <ul className="mt-10 flex gap-5">
-            {profile.socials.map(({ label, href }) => {
-              const Icon = ICONS[label];
-              return (
-                <li key={label}>
-                  <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="text-2xl text-muted hover:text-signal transition-colors">
-                    <Icon />
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="flex justify-center lg:justify-end">
-          <PacketStream />
+          <p className="hidden lg:block text-right text-sm text-dim" aria-hidden="true">
+            Messages delivered since you arrived
+            <span ref={counter} className="block font-mono text-3xl text-fog tabular-nums">0</span>
+          </p>
         </div>
       </div>
     </section>
@@ -91,7 +115,7 @@ function Work() {
         <aside className="lg:sticky lg:top-28 self-start" onMouseLeave={() => hover(null)}>
           {skills.map(({ group, items }) => (
             <div key={group} className="mb-7">
-              <h3 className="text-sm text-muted mb-3">{group}</h3>
+              <h3 className="text-sm text-dim mb-3">{group}</h3>
               <ul className="flex flex-wrap gap-2">
                 {items.map((s) => {
                   const on = active === s;
@@ -104,7 +128,7 @@ function Work() {
                         onClick={() => toggle(s)}
                         aria-pressed={pinned && on}
                         className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-                          on ? "bg-ink text-white border-ink" : "bg-white border-rule hover:border-ink"
+                          on ? "bg-packet text-white border-packet" : "bg-deep border-line hover:border-dim"
                         }`}
                       >
                         {s}
@@ -115,12 +139,12 @@ function Work() {
               </ul>
             </div>
           ))}
-          <p className="min-h-[3rem] text-sm text-muted" aria-live="polite">
+          <p className="min-h-[3rem] text-sm text-dim" aria-live="polite">
             {active && atWork && `${active}: used in production at ${experience[0].company.split(" ")[0]}.`}
             {active && !atWork && !anyProject && `${active}: part of my everyday toolkit.`}
           </p>
           {pinned && (
-            <button type="button" onClick={() => { setPinned(false); setActive(null); }} className="text-sm text-signal underline underline-offset-4">
+            <button type="button" onClick={() => { setPinned(false); setActive(null); }} className="text-sm text-packet underline underline-offset-4">
               Clear selection
             </button>
           )}
@@ -130,21 +154,27 @@ function Work() {
         <div>
           {featured && (
             <article
-              className={`relative rounded-[28px] bg-ink text-white p-8 md:p-12 overflow-hidden transition-opacity duration-300 ${matches(featured) ? "opacity-100" : "opacity-25"}`}
+              onMouseMove={spot}
+              className={`spot relative rounded-[28px] border border-line bg-gradient-to-br from-deep to-night p-7 md:p-10 overflow-hidden shadow-lift transition-opacity duration-300 ${matches(featured) ? "opacity-100" : "opacity-25"}`}
             >
-              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-signal/40 blur-3xl" aria-hidden="true" />
-              <p className="relative text-white/60 mb-4">Featured project</p>
-              <h3 className="relative font-display font-semibold text-4xl md:text-6xl tracking-tight">{featured.name}</h3>
-              <p className="relative mt-3 text-xl text-white/80">{featured.tagline}</p>
-              <p className="relative mt-6 max-w-2xl leading-relaxed text-white/75">{featured.description}</p>
-              <ul className="relative mt-8 grid sm:grid-cols-2 gap-x-8 gap-y-3">
-                {featured.highlights.map((h) => (
-                  <li key={h} className="flex gap-3 text-white/90">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-packet" aria-hidden="true" />
-                    {h}
-                  </li>
-                ))}
-              </ul>
+              <div className="absolute -right-32 -top-32 h-80 w-80 rounded-full bg-signal/30 blur-3xl" aria-hidden="true" />
+              <div className="relative grid gap-10 xl:grid-cols-[1fr_20rem] items-start">
+                <div>
+                  <p className="text-dim mb-4">Featured project</p>
+                  <h3 className="font-display font-semibold text-4xl md:text-6xl tracking-tight">{featured.name}</h3>
+                  <p className="mt-3 text-xl text-fog/85">{featured.tagline}</p>
+                  <p className="mt-6 max-w-xl leading-relaxed text-fog/70">{featured.description}</p>
+                  <ul className="mt-8 grid sm:grid-cols-2 gap-x-8 gap-y-3">
+                    {featured.highlights.map((h) => (
+                      <li key={h} className="flex gap-3 text-fog/90">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-packet" aria-hidden="true" />
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <PacketStream />
+              </div>
               <div className="relative mt-10 flex flex-wrap items-center justify-between gap-6">
                 <ul className="flex flex-wrap gap-2">
                   {featured.stack.map((s) => (
@@ -158,25 +188,25 @@ function Work() {
             </article>
           )}
 
-          <ul className="mt-6 border-t border-rule">
+          <ul className="mt-6 border-t border-line">
             {rest.map((p) => (
-              <li key={p.name} className={`group border-b border-rule transition-opacity duration-300 ${matches(p) ? "opacity-100" : "opacity-25"}`}>
-                <a href={p.repo} target="_blank" rel="noreferrer" className="block py-7 md:py-8 focus-visible:outline-offset-0">
+              <li key={p.name} onMouseMove={spot} className={`spot group rounded-2xl border-b border-line transition-[opacity,background-color] duration-300 hover:bg-deep ${matches(p) ? "opacity-100" : "opacity-25"}`}>
+                <a href={p.repo} target="_blank" rel="noreferrer" className="block px-4 md:px-6 py-7 md:py-8 focus-visible:outline-offset-0">
                   <div className="flex items-baseline justify-between gap-6">
                     <div>
-                      <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight group-hover:text-signal transition-colors">{p.name}</h3>
-                      <p className="mt-1 text-muted">{p.tagline}</p>
+                      <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight group-hover:text-packet transition-colors">{p.name}</h3>
+                      <p className="mt-1 text-dim">{p.tagline}</p>
                     </div>
-                    <FiArrowUpRight className="shrink-0 text-2xl text-muted transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-signal" aria-hidden="true" />
+                    <FiArrowUpRight className="shrink-0 text-2xl text-dim transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-packet" aria-hidden="true" />
                   </div>
                   <div className="grid grid-rows-[1fr] md:grid-rows-[0fr] md:group-hover:grid-rows-[1fr] md:group-focus-visible:grid-rows-[1fr] transition-[grid-template-rows] duration-300">
                     <div className="overflow-hidden">
-                      <p className="pt-4 max-w-2xl leading-relaxed text-ink/80">{p.description}</p>
+                      <p className="pt-4 max-w-2xl leading-relaxed text-fog/75">{p.description}</p>
                     </div>
                   </div>
                   <ul className="mt-4 flex flex-wrap gap-2">
                     {p.stack.map((s) => (
-                      <li key={s} className={`rounded-full border px-2.5 py-0.5 text-xs ${active === s ? "bg-signal text-white border-signal" : "border-rule text-muted"}`}>{s}</li>
+                      <li key={s} className={`rounded-full border px-2.5 py-0.5 text-xs ${active === s ? "bg-packet text-white border-packet" : "border-line text-dim"}`}>{s}</li>
                     ))}
                   </ul>
                 </a>
@@ -192,21 +222,21 @@ function Work() {
 /* ---------- Experience timeline ---------- */
 function Experience() {
   return (
-    <section id="experience" className="bg-white border-y border-rule">
+    <section id="experience" className="bg-deep/60 border-y border-line">
       <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
         <SectionHead title="Experience" />
-        <ol className="relative border-l-2 border-rule ml-2">
+        <ol className="relative border-l-2 border-line ml-2">
           {experience.map((e, i) => (
             <li key={e.company} className="relative pl-8 md:pl-12 pb-14 last:pb-0">
-              <span className={`absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-white ${i === 0 ? "bg-signal live-dot" : "bg-rule"}`} aria-hidden="true" />
+              <span className={`absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-night ${i === 0 ? "bg-packet live-dot" : "bg-line"}`} aria-hidden="true" />
               <div className="grid md:grid-cols-[12rem_1fr] gap-2 md:gap-10">
-                <p className="text-muted pt-1">{e.period}</p>
+                <p className="text-dim pt-1">{e.period}</p>
                 <div>
                   <h3 className="font-display font-semibold text-xl md:text-2xl tracking-tight">{e.title}</h3>
-                  <p className="mt-1 text-ink/70">{e.company}, {e.place}</p>
+                  <p className="mt-1 text-fog/65">{e.company}, {e.place}</p>
                   <ul className="mt-5 space-y-2 max-w-2xl">
                     {e.points.map((pt) => (
-                      <li key={pt} className="flex gap-3 leading-relaxed text-ink/80">
+                      <li key={pt} className="flex gap-3 leading-relaxed text-fog/75">
                         <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-packet" aria-hidden="true" />
                         {pt}
                       </li>
@@ -229,7 +259,7 @@ function About() {
       <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tight leading-tight">
         I like the parts of an app that have to happen right now.
       </h2>
-      <div className="space-y-5 text-lg leading-relaxed text-ink/80 max-w-xl">
+      <div className="space-y-5 text-lg leading-relaxed text-fog/75 max-w-xl">
         <p>
           Messages that arrive the instant they’re sent. Video calls that connect without a fuss.
           Data that’s private by design, not by promise. That’s the work I enjoy most, and it’s
@@ -279,7 +309,7 @@ function Contact() {
   const field = "w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 focus:border-packet focus:outline-none transition-colors";
 
   return (
-    <section id="contact" className="bg-ink text-white">
+    <section id="contact" className="relative overflow-hidden border-t border-line bg-[radial-gradient(ellipse_at_20%_0%,rgba(88,115,255,.22),transparent_55%)]">
       <div className="mx-auto max-w-6xl px-6 py-24 md:py-32 grid gap-14 lg:grid-cols-2">
         <div>
           <h2 className="font-display font-semibold text-4xl md:text-6xl tracking-tight leading-[1.05]">Let’s build something live.</h2>
@@ -303,7 +333,7 @@ function Contact() {
             <span className="block mb-2 text-sm text-white/60">Message</span>
             <textarea name="message" required rows={5} value={form.message} onChange={onChange} className={`${field} resize-none`} />
           </label>
-          <button type="submit" disabled={sending} className="w-full rounded-full bg-packet px-6 py-3.5 font-medium text-white hover:bg-white hover:text-ink transition-colors disabled:opacity-60">
+          <button type="submit" disabled={sending} className="w-full rounded-full bg-packet px-6 py-3.5 font-medium text-white hover:bg-fog hover:text-night transition-colors disabled:opacity-60">
             {sending ? "Sending…" : "Send message"}
           </button>
         </form>

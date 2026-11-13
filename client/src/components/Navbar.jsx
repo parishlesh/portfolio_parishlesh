@@ -31,8 +31,8 @@ export default function Navbar() {
     <>
       {/* top bar */}
       <header className="fixed inset-x-0 top-0 z-30 flex justify-center px-4 pt-4">
-        <div className={`flex w-full max-w-6xl items-center justify-between rounded-full px-5 py-2.5 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md border border-rule shadow-lift" : "border border-transparent"}`}>
-          <Link to="/" className="font-islandMoment text-4xl leading-none text-ink" aria-label="Parishlesh, home">
+        <div className={`flex w-full max-w-6xl items-center justify-between rounded-full px-5 py-2.5 transition-all duration-300 ${scrolled ? "bg-night/70 backdrop-blur-md border border-line" : "border border-transparent"}`}>
+          <Link to="/" className="font-islandMoment text-4xl leading-none text-fog" aria-label="Parishlesh, home">
             Parishlesh
           </Link>
           <nav className="hidden md:block" aria-label="Main">
@@ -41,7 +41,7 @@ export default function Navbar() {
                 <li key={id}>
                   <Link
                     to={{ pathname: "/", hash: `#${id}` }}
-                    className={`rounded-full px-4 py-2 text-[15px] transition-colors ${current === id ? "bg-ink text-white" : "text-ink/75 hover:text-ink"}`}
+                    className={`rounded-full px-4 py-2 text-[15px] transition-colors ${current === id ? "bg-fog text-night" : "text-fog/70 hover:text-fog"}`}
                   >
                     {label}
                   </Link>
@@ -54,11 +54,11 @@ export default function Navbar() {
 
       {/* mobile dock */}
       <nav className="md:hidden fixed inset-x-0 bottom-4 z-30 flex justify-center px-4" aria-label="Main">
-        <ul className="flex gap-1 rounded-full bg-ink/95 backdrop-blur px-2 py-2 shadow-lift">
+        <ul className="flex gap-1 rounded-full bg-deep/90 border border-line backdrop-blur px-2 py-2 shadow-lift">
           {LINKS.map(({ id, label, Icon }) => (
             <li key={id}>
               <Link to={{ pathname: "/", hash: `#${id}` }} aria-label={label}
-                className={`grid h-11 w-11 place-items-center rounded-full text-lg transition-colors ${current === id ? "bg-white text-ink" : "text-white/75"}`}>
+                className={`grid h-11 w-11 place-items-center rounded-full text-lg transition-colors ${current === id ? "bg-fog text-night" : "text-fog/70"}`}>
                 <Icon />
               </Link>
             </li>

@@ -4,12 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: "#EEF1F6",
-        ink: "#0D1A3A",
-        signal: "#2B4DFF",
-        packet: "#FF5A3C",
-        muted: "#5B6785",
-        rule: "#CBD3E2",
+        night: "#070B1F",
+        deep: "#0E1533",
+        line: "#1F2A55",
+        fog: "#E7ECFF",
+        dim: "#8C96BF",
+        signal: "#5873FF",
+        packet: "#FF6A4D",
       },
       fontFamily: {
         display: ['Unbounded', 'sans-serif'],
@@ -20,7 +21,7 @@ export default {
       },
       boxShadow: {
         top: '0 -1px 6px -1px rgba(0,0,0,.05), 0 -3px 4px -1px rgba(0,0,0,.03)',
-        lift: '0 1px 0 #CBD3E2, 0 24px 48px -24px rgba(13,26,58,.35)',
+        lift: '0 30px 80px -30px rgba(88,115,255,.45)',
       },
     },
   },
