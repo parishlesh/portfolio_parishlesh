@@ -2,14 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 
 body {
-  background-color: #fcfcfc;
+  background-color: #EEF1F6;
+  color: #0D1A3A;
+  font-family: "Instrument Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: #2B4DFF; color: #fff; }
+
+:focus-visible { outline: 2px solid #2B4DFF; outline-offset: 3px; border-radius: 4px; }
+
+/* faint dotted grid that sits behind the hero — reads like a network map */
+.net-grid {
+  background-image: radial-gradient(#CBD3E2 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@keyframes packet-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.packet-enter { animation: packet-in .45s cubic-bezier(.2,.8,.2,1) both; }
+
+@keyframes blink { 50% { opacity: 0; } }
+.caret { animation: blink 1s steps(1) infinite; }
+
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0 rgba(43,77,255,.5); }
+  100% { box-shadow: 0 0 0 10px rgba(43,77,255,0); }
+}
+.live-dot { animation: pulse-dot 1.6s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }

@@ -2,10 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import React, { useState } from 'react'
 import LoadingBar from 'react-top-loading-bar';
 import Home from './pages/Home'
-import About from './pages/About'
 import Navbar from './components/Navbar'
-import Contact from './pages/Contact'
-import Services from './pages/Services'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import PageNotFound from './pages/PageNotFound'
@@ -28,7 +25,7 @@ function App() {
     <BrowserRouter>
       <Navbar/>
       <LoadingBar
-          color='rgba(253, 166, 166, 1)'
+          color='#2B4DFF'
           progress={progress}
           height={3}
           shadow={true}
@@ -37,9 +34,9 @@ function App() {
         />
       <Routes>
         <Route path='/' element={<Home setProgress={setProgress}/>} />
-        <Route path='/about' element={<About setProgress={setProgress}/>} />
-        <Route path='/contact' element={<Contact setProgress={setProgress}/>} />
-        <Route path='/services' element={<Services setProgress={setProgress}/>} />
+        <Route path='/about' element={<Home setProgress={setProgress} section='about'/>} />
+        <Route path='/contact' element={<Home setProgress={setProgress} section='contact'/>} />
+        <Route path='/services' element={<Home setProgress={setProgress} section='work'/>} />
         <Route path='/register' element={<Register setProgress={setProgress}/>} />
         <Route path='/terms-condition' element={<TermsAndCondition setProgress={setProgress}/>} />
         <Route path='/login' element={<Login setProgress={setProgress}/>} />
