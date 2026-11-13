@@ -75,6 +75,14 @@ export const projects = [
     repo: "https://github.com/parishlesh",
   },
   {
+    name: "Adopt a Pet",
+    tagline: "Pet adoption web app",
+    description:
+      "A web app that connects people with pets looking for a home.",
+    stack: ["React"],
+    repo: "https://github.com/parishlesh",
+  },
+  {
     name: "Voice to Text",
     tagline: "Transcribe audio straight out of video files",
     description:
@@ -84,10 +92,10 @@ export const projects = [
   },
   {
     name: "This portfolio",
-    tagline: "Full-stack site with auth and an admin panel",
+    tagline: "The site you're on",
     description:
-      "React front end with a Node/Express/MongoDB API: login, password reset by email, a contact form, and an admin area to manage users and messages.",
-    stack: ["React", "Node.js", "Express", "MongoDB", "JWT", "Tailwind CSS"],
+      "React and Tailwind front end with a Node, Express and MongoDB API that stores contact messages.",
+    stack: ["React", "Tailwind CSS", "Node.js", "Express", "MongoDB"],
     repo: "https://github.com/parishlesh/portfolio_parishlesh",
   },
 ];

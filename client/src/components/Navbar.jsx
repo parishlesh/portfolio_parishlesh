@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../storage/auth";
-import { FiBriefcase, FiClock, FiUser, FiSend, FiLogIn, FiLogOut } from "react-icons/fi";
+import { Link, useLocation } from "react-router-dom";
+import { FiBriefcase, FiClock, FiUser, FiSend } from "react-icons/fi";
 
 const LINKS = [
   { id: "work", label: "Work", Icon: FiBriefcase },
@@ -11,7 +10,6 @@ const LINKS = [
 ];
 
 export default function Navbar() {
-  const { isLoggedIn, logoutUser } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [current, setCurrent] = useState("");
   const { pathname } = useLocation();
@@ -28,10 +26,6 @@ export default function Navbar() {
     const t = setTimeout(() => LINKS.forEach(({ id }) => { const el = document.getElementById(id); el && io.observe(el); }), 300);
     return () => { window.removeEventListener("scroll", onScroll); io.disconnect(); clearTimeout(t); setCurrent(""); };
   }, [pathname]);
-
-  const authLink = isLoggedIn
-    ? { to: "/logout", label: "Log out", Icon: FiLogOut, onClick: logoutUser }
-    : { to: "/login", label: "Log in", Icon: FiLogIn };
 
   return (
     <>
@@ -53,11 +47,6 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
-              <li className="ml-2">
-                <NavLink to={authLink.to} onClick={authLink.onClick} className="rounded-full border border-ink/20 px-4 py-2 text-[15px] hover:border-ink transition-colors">
-                  {authLink.label}
-                </NavLink>
-              </li>
             </ul>
           </nav>
         </div>
@@ -74,12 +63,6 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          <li>
-            <NavLink to={authLink.to} onClick={authLink.onClick} aria-label={authLink.label}
-              className="grid h-11 w-11 place-items-center rounded-full text-lg text-white/75">
-              <authLink.Icon />
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </>

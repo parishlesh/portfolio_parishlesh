@@ -5,7 +5,7 @@ import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { FiArrowUpRight, FiDownload, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 import CipherText from "../components/CipherText";
 import PacketStream from "../components/PacketStream";
-import { useAuth } from "../storage/auth";
+import { API } from "../../constants";
 import { profile, experience, projects, skills } from "../data/portfolio";
 
 const ICONS = { GitHub: FaGithub, LinkedIn: FaLinkedin, X: FaXTwitter, Instagram: FaInstagram };
@@ -249,13 +249,8 @@ function About() {
 
 /* ---------- Contact ---------- */
 function Contact() {
-  const { user, API } = useAuth();
   const [form, setForm] = useState({ username: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    if (user) setForm((f) => ({ ...f, username: f.username || user.username, email: f.email || user.email }));
-  }, [user]);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
