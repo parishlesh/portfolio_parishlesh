@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import CipherText from "../components/CipherText";
 
 export default function PageNotFound({ setProgress }) {
@@ -17,3 +18,7 @@ export default function PageNotFound({ setProgress }) {
     </main>
   );
 }
+
+PageNotFound.propTypes = {
+  setProgress: PropTypes.func,
+};

@@ -5,12 +5,9 @@ import * as THREE from "three";
  * A sphere of nodes wired to their nearest neighbours. Packets hop node to node
  * along the edges, like messages moving through a real-time network.
  * Mouse tilts it, scroll spins it and pushes it back.
- * `onDeliver` fires each time a packet reaches a node.
  */
-export default function NetworkGlobe({ onDeliver }) {
+export default function NetworkGlobe() {
   const mount = useRef(null);
-  const deliverRef = useRef(onDeliver);
-  deliverRef.current = onDeliver;
 
   useEffect(() => {
     const el = mount.current;
@@ -204,7 +201,6 @@ export default function NetworkGlobe({ onDeliver }) {
           p.t = 0;
           p.from = p.to;
           p.to = randNbr(p.from);
-          deliverRef.current?.();
           if (p.burst && --p.hops <= 0) { p.active = false; pPos[i * 3] = FAR; return; }
         }
         if (p.t < 0) { pPos[i * 3] = FAR; return; }

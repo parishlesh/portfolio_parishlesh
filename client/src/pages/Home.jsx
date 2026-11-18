@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { FiArrowUpRight, FiDownload, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
@@ -424,7 +425,7 @@ function Contact() {
 }
 
 /* ---------- Page ---------- */
-export default function Home({ setProgress, section }) {
+function Home({ setProgress, section }) {
   const { hash } = useLocation();
 
   useEffect(() => {
@@ -444,3 +445,42 @@ export default function Home({ setProgress, section }) {
     </main>
   );
 }
+
+const projectShape = PropTypes.shape({
+  live: PropTypes.string,
+  repo: PropTypes.string,
+});
+
+const workShape = PropTypes.shape({
+  name: PropTypes.string.isRequired,
+  what: PropTypes.string.isRequired,
+  live: PropTypes.string,
+  metrics: PropTypes.arrayOf(PropTypes.string).isRequired,
+  points: PropTypes.arrayOf(PropTypes.string).isRequired,
+});
+
+DecryptHeading.propTypes = {
+  text: PropTypes.string.isRequired,
+  className: PropTypes.string,
+};
+
+SectionHead.propTypes = {
+  title: PropTypes.string.isRequired,
+  note: PropTypes.string,
+};
+
+ProjectLinks.propTypes = {
+  p: projectShape.isRequired,
+  big: PropTypes.bool,
+};
+
+WorkCard.propTypes = {
+  w: workShape.isRequired,
+};
+
+Home.propTypes = {
+  setProgress: PropTypes.func,
+  section: PropTypes.string,
+};
+
+export default Home;

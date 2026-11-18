@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 const GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#$%&*+=<>/\\";
 const rand = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
@@ -44,3 +45,12 @@ export default function CipherText({ text, duration = 1200, delay = 0, start = t
     </Tag>
   );
 }
+
+CipherText.propTypes = {
+  text: PropTypes.string.isRequired,
+  duration: PropTypes.number,
+  delay: PropTypes.number,
+  start: PropTypes.bool,
+  className: PropTypes.string,
+  as: PropTypes.elementType,
+};
