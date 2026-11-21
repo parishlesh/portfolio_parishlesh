@@ -2,25 +2,24 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs")
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { string } = require("zod");
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        require: true,
+        required: true,
     },
     password: {
         type: String,
-        require: true,
+        required: true,
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     phone: {
         type: String,
-        require: true,
+        required: true,
     },
     isAdmin: {
         type: Boolean,
@@ -38,7 +37,7 @@ userSchema.pre("save", async function (next) {
     }
     try {
         const saltRound = 15;
-        const hashPassword = bcrypt.hash(user.password, saltRound);
+        const hashPassword = await bcrypt.hash(user.password, saltRound);
         user.password = hashPassword;
         next();
     } catch (error) {

@@ -27,6 +27,8 @@ export default function Navbar() {
     return () => { window.removeEventListener("scroll", onScroll); io.disconnect(); clearTimeout(t); setCurrent(""); };
   }, [pathname]);
 
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <>
       {/* top bar */}

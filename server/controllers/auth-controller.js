@@ -107,19 +107,9 @@ const forgotPassword = async (req, res, next) => {
     // Send the reset email
     await sendResetEmail(userExist.email, resetToken);
 
-    console.log("token form the forgot passwor", sendResetEmail);
-
-    return res.status(200).json({
-      message: "Password reset link sent to email",
-      link: { sendResetEmail },
-    });
+    return res.status(200).json({ message: "Password reset link sent to email" });
   } catch (err) {
-    next(err); // Log the error for debugging purposes
-    return res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      extraDetails: err.message,
-    });
+    next({ status: 500, message: "Internal server error", extraDetails: err.message });
   }
 };
 const resetPassword = async (req, res, next) => {
@@ -141,11 +131,8 @@ const resetPassword = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    // Hash the new password before saving it
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Update the user's password and clear reset token fields
-    user.password = hashedPassword;
+    // Set the plain password; the model's pre-save hook hashes it
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();

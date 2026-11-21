@@ -13,12 +13,11 @@ const cors = require('cors')
 var corsOptions = {
     origin: ['http://localhost:5173', 'https://portfolio-parishlesh-main.vercel.app', 'https://portfolio-parishlesh-v1.vercel.app'],
 
-    method: "GET, PUT, POST, DELETE, PATCH, HEAD",
-    Credential: true
+    methods: "GET, PUT, POST, DELETE, PATCH, HEAD",
+    credentials: true
 }
 
 app.use(cors(corsOptions));
-app.use(errorMiddleware)
 app.use(express.json());
 
 app.use("/api/auth", authRoute);
@@ -27,7 +26,7 @@ app.use("/api/data", serviceRoute)
 
 app.use("/api/admin", adminRoute)
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 connectDb().then(() => {
     app.listen(PORT, () => {
