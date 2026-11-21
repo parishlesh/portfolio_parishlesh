@@ -36,7 +36,7 @@ userSchema.pre("save", async function (next) {
        return next();
     }
     try {
-        const saltRound = 15;
+        const saltRound = 10;
         const hashPassword = await bcrypt.hash(user.password, saltRound);
         user.password = hashPassword;
         next();
@@ -73,7 +73,7 @@ userSchema.methods.generateResetToken = async function () {
     const resetToken = crypto.randomBytes(20).toString("hex");
   
     // Hash the token using bcrypt
-    const salt = await bcrypt.genSalt(15);
+    const salt = await bcrypt.genSalt(10);
     this.resetPasswordToken = await bcrypt.hash(resetToken, salt);
   
     // Set token expiration time to 10 min
